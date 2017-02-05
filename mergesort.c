@@ -97,16 +97,17 @@ void do_merge (void * head, void * mid, void * tail,
     const void * a = buf;
     const void * a_end = buf + (mid - head);
     const void * b = mid;
+    void * dest = head;
 
     switch (size)
     {
     case 4:
-        for (void * dest = head; dest < tail; dest += 4)
+        for (; dest < tail; dest += 4)
         {
-            if (a >= a_end)
+            if (a >= a_end || b >= tail)
                 break;
 
-            if (b >= tail || compare (a, b, data) < 1) {
+            if (compare (a, b, data) < 1) {
                 * (int32_t *) dest = * (int32_t *) a;
                 a += 4;
             } else {
@@ -118,12 +119,12 @@ void do_merge (void * head, void * mid, void * tail,
         break;
 
     case 8:
-        for (void * dest = head; dest < tail; dest += 8)
+        for (; dest < tail; dest += 8)
         {
-            if (a >= a_end)
+            if (a >= a_end || b >= tail)
                 break;
 
-            if (b >= tail || compare (a, b, data) < 1) {
+            if (compare (a, b, data) < 1) {
                 * (int64_t *) dest = * (int64_t *) a;
                 a += 8;
             } else {
@@ -135,12 +136,12 @@ void do_merge (void * head, void * mid, void * tail,
         break;
 
     default:
-        for (void * dest = head; dest < tail; dest += size)
+        for (; dest < tail; dest += size)
         {
-            if (a >= a_end)
+            if (a >= a_end || b >= tail)
                 break;
 
-            if (b >= tail || compare (a, b, data) < 1) {
+            if (compare (a, b, data) < 1) {
                 memcpy (dest, a, size);
                 a += size;
             } else {
@@ -151,6 +152,9 @@ void do_merge (void * head, void * mid, void * tail,
 
         break;
     }
+
+    if (a < a_end)
+        memcpy (dest, a, a_end - a);
 }
 
 void mergesort (void * items, int n_items, int size,
