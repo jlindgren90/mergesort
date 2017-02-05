@@ -2,11 +2,9 @@
 #include <string.h>
 #include <glib.h>
 
-static void * buf = NULL;
-static int buf_size = 0;
-
-void insert_single (void * head, void * end,
-                    int size, GCompareDataFunc compare, void * data)
+void insert_head (void * head, void * tail,
+                  int size, GCompareDataFunc compare, void * data,
+                  void * * buf, int * buf_size)
 {
     uint32_t temp4;
     uint64_t temp8;
@@ -18,7 +16,7 @@ void insert_single (void * head, void * end,
         temp4 = * (uint32_t *) head;
         * (uint32_t *) head = * (uint32_t *) (head + 4);
 
-        for (dest = head + 4; dest + 4 < end; dest += 4)
+        for (dest = head + 4; dest + 4 < tail; dest += 4)
         {
             if (compare (& temp4, dest + 4, data) < 1)
                 break;
@@ -33,7 +31,7 @@ void insert_single (void * head, void * end,
         temp8 = * (uint64_t *) head;
         * (uint64_t *) head = * (uint64_t *) (head + 8);
 
-        for (dest = head + 8; dest + 8 < end; dest += 8)
+        for (dest = head + 8; dest + 8 < tail; dest += 8)
         {
             if (compare (& temp8, dest + 8, data) < 1)
                 break;
@@ -45,38 +43,39 @@ void insert_single (void * head, void * end,
         break;
 
     default:
-        if (buf_size < size)
+        if (* buf_size < size)
         {
-            buf = g_realloc (buf, size);
-            buf_size = size;
+            * buf = g_realloc (* buf, size);
+            * buf_size = size;
         }
 
-        for (dest = head + size; dest + size < end; dest += size)
+        for (dest = head + size; dest + size < tail; dest += size)
         {
             if (compare (head, dest + size, data) < 1)
                 break;
         }
 
-        memcpy (buf, head, size);
+        memcpy (* buf, head, size);
         memmove (head, head + size, dest - head);
-        memcpy (dest, buf, size);
+        memcpy (dest, * buf, size);
         break;
     }
 }
 
 void do_merge (void * head, void * mid, void * tail,
-               int size, GCompareDataFunc compare, void * data)
+               int size, GCompareDataFunc compare, void * data,
+               void * * buf, int * buf_size)
 {
-    if (buf_size < mid - head)
+    if (* buf_size < mid - head)
     {
-        buf = g_realloc (buf, mid - head);
-        buf_size = mid - head;
+        * buf = g_realloc (* buf, mid - head);
+        * buf_size = mid - head;
     }
 
-    memcpy (buf, head, mid - head);
+    memcpy (* buf, head, mid - head);
 
-    const void * a = buf;
-    const void * a_end = buf + (mid - head);
+    const void * a = * buf;
+    const void * a_end = a + (mid - head);
     const void * b = mid;
     void * dest = head;
 
@@ -143,6 +142,9 @@ void mergesort (void * items, int n_items, int size,
     if (n_items < 2)
         return;
 
+    void * buf = NULL;
+    int buf_size = 0;
+
     void * head = items + n_items * size;
     void * mid, * tail, * tail2;
 
@@ -159,7 +161,7 @@ void mergesort (void * items, int n_items, int size,
             if (compare (head - size, head, data) > 0)
             {
                 if (mid - head < 4 * size)
-                    insert_single (head - size, mid, size, compare, data);
+                    insert_head (head - size, mid, size, compare, data, & buf, & buf_size);
                 else
                     break;
             }
@@ -178,7 +180,7 @@ void mergesort (void * items, int n_items, int size,
                 if ((mid - head) <= (tail2 - tail))
                     break;
 
-                do_merge (mid, tail, tail2, size, compare, data);
+                do_merge (mid, tail, tail2, size, compare, data, & buf, & buf_size);
 
                 tail = tail2;
                 n_div --;
@@ -187,7 +189,7 @@ void mergesort (void * items, int n_items, int size,
             if (head > items && (mid - head) <= (tail - mid) / 2)
                 break;
 
-            do_merge (head, mid, tail, size, compare, data);
+            do_merge (head, mid, tail, size, compare, data, & buf, & buf_size);
 
             mid = tail;
             n_div --;
@@ -197,4 +199,6 @@ void mergesort (void * items, int n_items, int size,
         n_div ++;
     }
     while (head > items);
+
+    g_free (buf);
 }
