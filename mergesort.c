@@ -67,10 +67,6 @@ void insert_single (void * head, void * end,
 void do_merge (void * head, void * mid, void * tail,
                int size, GCompareDataFunc compare, void * data)
 {
-    // optimization for forward sequence
-    if (compare (mid - size, mid, data) < 1)
-        return;
-
     if (buf_size < mid - head)
     {
         buf = g_realloc (buf, mid - head);
