@@ -79,6 +79,8 @@ void verify_sorted (const Item * items, int n_items)
 
 int main (void)
 {
+    g_random_set_seed (0);
+
     for (int n_items = 1; n_items < 65536; n_items *= 2)
     {
         for (int n_swaps = 1; n_swaps < n_items; n_swaps *= 2)

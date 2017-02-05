@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <stdint.h>
 #include <string.h>
 #include <glib.h>
@@ -187,7 +186,7 @@ void mergesort2 (void * items, int n_items, int size,
         return;
 
     void * head = items + n_items * size;
-    void * mid, * tail;
+    void * mid, * tail, * tail2;
 
     void * div[64];
     int n_div = 0;
@@ -213,6 +212,19 @@ void mergesort2 (void * items, int n_items, int size,
         while (n_div >= 1)
         {
             tail = div[n_div - 1];
+
+            while (n_div >= 2)
+            {
+                tail2 = div[n_div - 2];
+
+                if ((mid - head) <= (tail2 - tail))
+                    break;
+
+                do_merge (mid, tail, tail2, size, compare, data);
+
+                tail = tail2;
+                n_div --;
+            }
 
             if (head > items && (mid - head) <= (tail - mid) / 2)
                 break;
