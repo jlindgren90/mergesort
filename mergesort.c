@@ -64,24 +64,6 @@ void insert_single (void * head, void * end,
     }
 }
 
-void insertion_sort (void * items, int n_items, int size,
-                     GCompareDataFunc compare, void * data)
-{
-    if (n_items < 2)
-        return;
-
-    void * end = items + n_items * size;
-    void * head = end - size;
-
-    while (head > items)
-    {
-        if (compare (head - size, head, data) > 0)
-            insert_single (head - size, end, size, compare, data);
-
-        head -= size;
-    }
-}
-
 void do_merge (void * head, void * mid, void * tail,
                int size, GCompareDataFunc compare, void * data)
 {
@@ -161,26 +143,6 @@ void do_merge (void * head, void * mid, void * tail,
 
 void mergesort (void * items, int n_items, int size,
                 GCompareDataFunc compare, void * data)
-{
-    if (n_items < 16)
-    {
-        insertion_sort (items, n_items, size, compare, data);
-        return;
-    }
-
-    int half = n_items / 2;
-
-    void * mid = items + half * size;
-    void * tail = items + n_items * size;
-
-    mergesort (items, half, size, compare, data);
-    mergesort (mid, n_items - half, size, compare, data);
-
-    do_merge (items, mid, tail, size, compare, data);
-}
-
-void mergesort2 (void * items, int n_items, int size,
-                 GCompareDataFunc compare, void * data)
 {
     if (n_items < 2)
         return;
