@@ -103,7 +103,10 @@ void do_merge (void * head, void * mid, void * tail,
     case 4:
         for (void * dest = head; dest < tail; dest += 4)
         {
-            if (b >= tail || (a < a_end && compare (a, b, data) < 1)) {
+            if (a >= a_end)
+                break;
+
+            if (b >= tail || compare (a, b, data) < 1) {
                 * (int32_t *) dest = * (int32_t *) a;
                 a += 4;
             } else {
@@ -117,7 +120,10 @@ void do_merge (void * head, void * mid, void * tail,
     case 8:
         for (void * dest = head; dest < tail; dest += 8)
         {
-            if (b >= tail || (a < a_end && compare (a, b, data) < 1)) {
+            if (a >= a_end)
+                break;
+
+            if (b >= tail || compare (a, b, data) < 1) {
                 * (int64_t *) dest = * (int64_t *) a;
                 a += 8;
             } else {
@@ -131,7 +137,10 @@ void do_merge (void * head, void * mid, void * tail,
     default:
         for (void * dest = head; dest < tail; dest += size)
         {
-            if (b >= tail || (a < a_end && compare (a, b, data) < 1)) {
+            if (a >= a_end)
+                break;
+
+            if (b >= tail || compare (a, b, data) < 1) {
                 memcpy (dest, a, size);
                 a += size;
             } else {
@@ -185,7 +194,7 @@ void mergesort2 (void * items, int n_items, int size,
         {
             if (compare (head - size, head, data) > 0)
             {
-                if (mid - head < 16)
+                if (mid - head < 4 * size)
                     insert_single (head - size, mid, size, compare, data);
                 else
                     break;
