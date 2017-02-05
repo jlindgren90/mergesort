@@ -114,11 +114,8 @@ void do_merge (void * head, void * mid, void * tail,
     switch (size)
     {
     case 4:
-        for (; dest < tail; dest += 4)
+        for (; a < a_end && b < tail; dest += 4)
         {
-            if (a >= a_end || b >= tail)
-                break;
-
             if (compare (a, b, data) < 1) {
                 * (int32_t *) dest = * (int32_t *) a;
                 a += 4;
@@ -131,11 +128,8 @@ void do_merge (void * head, void * mid, void * tail,
         break;
 
     case 8:
-        for (; dest < tail; dest += 8)
+        for (; a < a_end && b < tail; dest += 8)
         {
-            if (a >= a_end || b >= tail)
-                break;
-
             if (compare (a, b, data) < 1) {
                 * (int64_t *) dest = * (int64_t *) a;
                 a += 8;
@@ -148,11 +142,8 @@ void do_merge (void * head, void * mid, void * tail,
         break;
 
     default:
-        for (; dest < tail; dest += size)
+        for (; a < a_end && b < tail; dest += size)
         {
-            if (a >= a_end || b >= tail)
-                break;
-
             if (compare (a, b, data) < 1) {
                 memcpy (dest, a, size);
                 a += size;
