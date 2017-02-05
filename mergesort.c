@@ -86,6 +86,10 @@ void insertion_sort (void * items, int n_items, int size,
 void do_merge (void * head, void * mid, void * tail,
                int size, GCompareDataFunc compare, void * data)
 {
+    // optimization for forward sequence
+    if (compare (mid - size, mid, data) < 1)
+        return;
+
     if (buf_size < mid - head)
     {
         buf = g_realloc (buf, mid - head);
@@ -98,6 +102,14 @@ void do_merge (void * head, void * mid, void * tail,
     const void * a_end = buf + (mid - head);
     const void * b = mid;
     void * dest = head;
+
+    // optimization for reverse sequence
+    if (compare (head, tail - size, data) > 0)
+    {
+        memcpy (dest, b, tail - b);
+        dest += tail - b;
+        b = tail;
+    }
 
     switch (size)
     {

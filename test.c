@@ -11,6 +11,8 @@ typedef struct {
 /* mergesort.c */
 void mergesort (void * items, int n_items, int size,
                 GCompareDataFunc compare, void * data);
+void mergesort2 (void * items, int n_items, int size,
+                 GCompareDataFunc compare, void * data);
 
 Item * gen_array (int n_items, int n_swaps, bool rev)
 {
@@ -77,7 +79,7 @@ void verify_sorted (const Item * items, int n_items)
 
 int main (void)
 {
-    for (int n_items = 1; n_items < 1024*1024; n_items *= 2)
+    for (int n_items = 1; n_items < 65536; n_items *= 2)
     {
         for (int n_swaps = 1; n_swaps < n_items; n_swaps *= 2)
         {
@@ -100,6 +102,16 @@ int main (void)
 
             items = gen_array (n_items, n_swaps, true);
             mergesort (items, n_items, sizeof (Item), compare_items, NULL);
+            verify_sorted (items, n_items);
+            g_free (items);
+
+            items = gen_array (n_items, n_swaps, false);
+            mergesort2 (items, n_items, sizeof (Item), compare_items, NULL);
+            verify_sorted (items, n_items);
+            g_free (items);
+
+            items = gen_array (n_items, n_swaps, true);
+            mergesort2 (items, n_items, sizeof (Item), compare_items, NULL);
             verify_sorted (items, n_items);
             g_free (items);
         }
