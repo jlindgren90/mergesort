@@ -1,3 +1,28 @@
+/*
+ * Adaptive Merge Sort
+ * Copyright 2017 John Lindgren
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions, and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions, and the following disclaimer in the documentation
+ *    provided with the distribution.
+ *
+ * This software is provided "as is" and without any warranty, express or
+ * implied. In no event shall the authors be liable for any damages arising from
+ * the use of this software.
+ */
+
+/*
+ * Test driver for the merge-sort algorithm
+ */
+
+#include "mergesort.h"
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,10 +32,6 @@ typedef struct {
     int val;
     int idx;
 } Item;
-
-/* mergesort.c */
-void mergesort (void * items, int n_items, int size,
-                GCompareDataFunc compare, void * data);
 
 Item * gen_array (int n_items, int n_swaps, bool rev)
 {
@@ -64,6 +85,7 @@ int compare_items (const void * a_, const void * b_, void * data)
         return 1;
 }
 
+/* verifies correct ordering as well as stability */
 void verify_sorted (const Item * items, int n_items)
 {
     for (int i = 0; i < n_items - 1; i ++)
