@@ -58,8 +58,7 @@ private:
     }
 
     /* Merges two sorted sub-lists */
-    static void do_merge (Iter head, Iter mid, Iter tail, Less less,
-                          std::vector<Value> & buf)
+    static void do_merge (Iter head, Iter mid, Iter tail, Less less, std::vector<Value> & buf)
     {
         /* copy list "a" to temporary storage */
         if (buf.size () < (Size) (mid - head))
