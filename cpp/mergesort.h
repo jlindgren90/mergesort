@@ -39,6 +39,7 @@ class MergeSort
 {
 private:
     typedef typename std::iterator_traits<Iter>::value_type Value;
+    typedef typename std::vector<Value>::size_type Size;
 
     /* Inserts a single element into a sorted list */
     static void insert_head (Iter head, Iter tail, Less less)
@@ -60,14 +61,14 @@ private:
     static void do_merge (Iter head, Iter mid, Iter tail, Less less,
                           std::vector<Value> & buf)
     {
-        buf.clear ();
-        buf.reserve (mid - head);
-
         /* copy list "a" to temporary storage */
-        std::move (head, mid, std::back_inserter (buf));
+        if (buf.size () < (Size) (mid - head))
+            buf = std::vector<Value> (head, mid);
+        else
+            std::move (head, mid, buf.begin ());
 
         auto a = buf.begin ();
-        auto a_end = buf.end ();
+        auto a_end = a + (mid - head);
         Iter b = mid;
         Iter dest = head;
 
