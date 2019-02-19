@@ -1,5 +1,5 @@
 SRCS = test.cc
-HDRS = mergesort.h
+HDRS = mergesort.h timsort.h
 
 CFLAGS = $(shell pkg-config --cflags glib-2.0)
 LIBS = $(shell pkg-config --libs glib-2.0)

@@ -22,6 +22,7 @@
  */
 
 #include "mergesort.h"
+#include "timsort.h"
 
 #include <glib.h>
 
@@ -79,10 +80,14 @@ void verify_sorted (const std::vector<Item> & items)
 
 /* broken out for profiling */
 void stdsort (std::vector<Item> & items) __attribute__ ((noinline));
+void timsort (std::vector<Item> & items) __attribute__ ((noinline));
 void mergesort (std::vector<Item> & items) __attribute__ ((noinline));
 
 void stdsort (std::vector<Item> & items)
     { std::stable_sort (std::begin (items), std::end (items)); }
+
+void timsort (std::vector<Item> & items)
+    { gfx::timsort (std::begin (items), std::end (items)); }
 
 void mergesort (std::vector<Item> & items)
     { mergesort (std::begin (items), std::end (items)); }
@@ -103,6 +108,14 @@ int main (void)
 
             items = gen_array (n_items, n_swaps, true);
             stdsort (items);
+            verify_sorted (items);
+
+            items = gen_array (n_items, n_swaps, false);
+            timsort (items);
+            verify_sorted (items);
+
+            items = gen_array (n_items, n_swaps, true);
+            timsort (items);
             verify_sorted (items);
 
             items = gen_array (n_items, n_swaps, false);
