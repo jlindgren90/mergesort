@@ -103,7 +103,6 @@ public:
 
         /* The algorithm runs right-to-left (so that insertions are left-to-right). */
         Iter head = end;
-        Iter mid, tail, tail2;
 
         /* Markers recording the divisions between sorted sub-lists or "runs".
          * Each run is at least 2x the length of its left-hand neighbor, so in
@@ -113,8 +112,8 @@ public:
 
         do
         {
-            mid = head;
-            head = mid - 1;
+            Iter mid = head;
+            head --;
 
             /* Scan right-to-left to find a run of increasing values.
              * If necessary, use insertion sort to create a run at 4 values long.
@@ -135,11 +134,11 @@ public:
             /* Merge/collapse sub-lists left-to-right to maintain the invariant. */
             while (n_div >= 1)
             {
-                tail = div[n_div - 1];
+                Iter tail = div[n_div - 1];
 
                 while (n_div >= 2)
                 {
-                    tail2 = div[n_div - 2];
+                    Iter tail2 = div[n_div - 2];
 
                     /*
                      * Check for the occasional case where the new sub-list is
