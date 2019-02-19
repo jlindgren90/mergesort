@@ -72,30 +72,19 @@ private:
         Iter b = mid;
         Iter dest = head;
 
-        /* Handle the case of strictly separate (but reversed) lists specially.
-         * In this case, we simply shift list "b" to the left. */
-        if (less (* (tail - 1), * a))
+        while (1)
         {
-            std::move (b, tail, dest);
-            dest += tail - b;
-            b = tail;
-        }
-        else
-        {
-            while (1)
+            if (! less (* b, * a))
             {
-                if (! less (* b, * a))
-                {
-                    * (dest ++) = std::move (* a);
-                    if ((++ a) == a_end)
-                        break;
-                }
-                else
-                {
-                    * (dest ++) = std::move (* b);
-                    if ((++ b) == tail)
-                        break;
-                }
+                * (dest ++) = std::move (* a);
+                if ((++ a) == a_end)
+                    break;
+            }
+            else
+            {
+                * (dest ++) = std::move (* b);
+                if ((++ b) == tail)
+                    break;
             }
         }
 
