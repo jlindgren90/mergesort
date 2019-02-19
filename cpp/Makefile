@@ -1,11 +1,15 @@
-SRCS = test.cc
 HDRS = mergesort.h timsort.h
 
 CFLAGS = $(shell pkg-config --cflags glib-2.0)
 LIBS = $(shell pkg-config --libs glib-2.0)
 
-test: $(SRCS) $(HDRS)
-	g++ -std=c++11 -g -Wall -O2 -o test $(CFLAGS) $(SRCS) $(LIBS)
+all: test bench
+
+test: test.cc $(HDRS)
+	g++ -std=c++11 -g -Wall -O2 -o test $(CFLAGS) test.cc $(LIBS)
+
+bench: bench.cc $(HDRS)
+	g++ -std=c++11 -g -Wall -O2 -o test bench.cc
 
 clean:
 	rm -rf test
