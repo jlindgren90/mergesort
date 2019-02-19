@@ -63,7 +63,7 @@ private:
     {
         /* copy list "a" to temporary storage */
         if (buf.size () < (Size) (mid - head))
-            buf = std::vector<Value> (head, mid);
+            buf = std::vector<Value> (std::make_move_iterator (head), std::make_move_iterator (mid));
         else
             std::move (head, mid, buf.begin ());
 
@@ -74,7 +74,7 @@ private:
 
         /* Handle the case of strictly separate (but reversed) lists specially.
          * In this case, we simply shift list "b" to the left. */
-        if (less (* (tail - 1), * head))
+        if (less (* (tail - 1), * a))
         {
             std::move (b, tail, dest);
             dest += tail - b;

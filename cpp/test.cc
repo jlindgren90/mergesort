@@ -24,6 +24,7 @@
 #include "mergesort.h"
 #include "timsort.h"
 
+#include <assert.h>
 #include <glib.h>
 
 struct Item
@@ -31,21 +32,33 @@ struct Item
     int val;
     int idx;
 
+    Item (int val) : val (val), idx (-1) {}
+
+    Item (Item && b) : val (b.val), idx (b.idx)
+        { b.val = b.idx = -1; }
+
+    Item & operator= (Item && b)
+        { val = b.val; idx = b.idx; b.val = b.idx = -1; return *this; }
+
     bool operator< (const Item & b) const
-        { return val < b.val; }
+    {
+        assert (idx >= 0 && b.idx >= 0);
+        return val < b.val;
+    }
 };
 
 std::vector<Item> gen_array (int n_items, int n_swaps, bool rev)
 {
-    std::vector<Item> items (n_items);
+    std::vector<Item> items;
+    items.reserve (n_items);
 
     /* start with a sorted array (forward or reverse) */
     if (rev) {
         for (int i = 0; i < n_items; i ++)
-            items[i].val = n_items - 1 - i;
+            items.push_back (n_items - 1 - i);
     } else {
         for (int i = 0; i < n_items; i ++)
-            items[i].val = i;
+            items.push_back (i);
     }
 
     /* introduce randomness by swapping pairs of items */

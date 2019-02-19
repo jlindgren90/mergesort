@@ -120,7 +120,7 @@ static void do_merge (void * head, void * mid, void * tail,
 
     /* Handle the case of strictly separate (but reversed) lists specially.
      * In this case, we simply shift list "b" to the left. */
-    if (compare (head, tail - size, context) > 0)
+    if (compare (a, tail - size, context) > 0)
     {
         memmove (dest, b, tail - b);
         dest += tail - b;
