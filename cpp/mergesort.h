@@ -80,15 +80,22 @@ private:
             dest += tail - b;
             b = tail;
         }
-
-        for (; a < a_end && b < tail; dest ++)
+        else
         {
-            if (! less (* b, * a)) {
-                * dest = std::move (* a);
-                a ++;
-            } else {
-                * dest = std::move (* b);
-                b ++;
+            while (1)
+            {
+                if (! less (* b, * a))
+                {
+                    * (dest ++) = std::move (* a);
+                    if ((++ a) == a_end)
+                        break;
+                }
+                else
+                {
+                    * (dest ++) = std::move (* b);
+                    if ((++ b) == tail)
+                        break;
+                }
             }
         }
 
