@@ -67,8 +67,8 @@ float measure(float factor, Sort sort) {
 
 template<typename T>
 void benchmark() {
-    for (int i = 0; i <= 100; ++i) {
-        float factor = i * 0.01;
+    for (int i = 0; i <= 20; ++i) {
+        float factor = i * 0.05;
         auto dt1 = measure<T>(factor, [](auto &tab){std::stable_sort(std::begin(tab), std::end(tab));});
         auto dt2 = measure<T>(factor, [](auto &tab){mergesort(std::begin(tab), std::end(tab));});
         auto dt3 = measure<T>(factor, [](auto &tab){gfx::timsort(std::begin(tab), std::end(tab));});
