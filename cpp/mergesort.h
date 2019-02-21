@@ -73,17 +73,20 @@ void mergesort (Iter start, Iter end, Less less)
         Iter b = mid;
         Iter dest = head;
 
+        /* the exit conditions of this loop are separated as an optimization */
         while (1)
         {
             if (! less (* b, * a))
             {
                 * (dest ++) = std::move (* a);
+                /* we already know b < tail, so don't waste time checking it */
                 if ((++ a) == a_end)
                     break;
             }
             else
             {
                 * (dest ++) = std::move (* b);
+                /* we already know a < a_end, so don't waste time checking it */
                 if ((++ b) == tail)
                     break;
             }
