@@ -39,25 +39,24 @@ class MergeSort
 {
 private:
     typedef typename std::iterator_traits<Iter>::value_type Value;
-    typedef typename std::vector<Value>::size_type Size;
 
-    /* Inserts a single element into a sorted list */
-    static void insert_head (Iter head, Iter tail, Less less)
+    /* One step of an insertion sort: rotates the head item into place
+     * within the sorted sub-list [head + 1, tail) */
+    static void rotate_head (Iter head, Iter tail, Less less)
     {
-        Iter dest;
+        /* Find the proper location for the head item.  Skip *(head+1)
+         * since we already know it is less than *(head). */
+        Iter dest = head + 2;
+        while (dest < tail && less (* dest, * head))
+            dest ++;
 
-        for (dest = head + 1; dest + 1 < tail; dest ++)
-        {
-            if (! less (* (dest + 1), * head))
-                break;
-        }
-
+        /* equivalent of std::rotate, inlined for speed */
         Value tmp = std::move (* head);
-        std::move (head + 1, dest + 1, head);
-        * dest = std::move (tmp);
+        std::move (head + 1, dest, head);
+        * (dest - 1) = std::move (tmp);
     }
 
-    /* Merges two sorted sub-lists */
+    /* Merges the two sorted sub-lists [head, mid) and [mid, tail) */
     static void do_merge (Iter head, Iter mid, Iter tail, Less less, std::vector<Value> & buf)
     {
         /* Copy list "a" to temporary storage.  Move items directly onto
@@ -127,7 +126,7 @@ public:
                 if (less (* head, * (head - 1)))
                 {
                     if (mid - head < 4)
-                        insert_head (head - 1, mid, less);
+                        rotate_head (head - 1, mid, less);
                     else
                         break;
                 }
