@@ -33,11 +33,16 @@
  * As in TimSort, an already-sorted array will be processed in linear time,
  * making this an "adaptive" algorithm.
  *
- * This implementation supports only random-access iterators.
+ * Notes:
+ *
+ *   1. This implementation supports only random-access iterators.
+ *   2. The algorithm requires O(N) temporary storage.  The caller can
+ *      override how to allocate this storage via the "copy" template
+ *      parameter.
  */
 
-template<typename Iter, typename Less>
-void mergesort (Iter start, Iter end, Less less)
+template<typename Iter, typename Less, typename Copy>
+void mergesort (Iter start, Iter end, Less less, Copy copy)
 {
     typedef typename std::iterator_traits<Iter>::value_type Value;
 
@@ -58,17 +63,10 @@ void mergesort (Iter start, Iter end, Less less)
     };
 
     /* Merges the two sorted sub-lists [head, mid) and [mid, tail) */
-    auto do_merge = [less] (Iter head, Iter mid, Iter tail, std::vector<Value> & buf)
+    auto do_merge = [less, copy] (Iter head, Iter mid, Iter tail)
     {
-        /* Copy list "a" to temporary storage.  Move items directly onto
-         * the existing vector if it's big enough.  Otherwise, create a
-         * new one; this is significantly faster than appending using
-         * std::back_inserter.  Note: end() - begin() is equivalent to
-         * size() but avoids a signed/unsigned comparison warning. */
-        if (mid - head > buf.end () - buf.begin ())
-            buf = std::vector<Value> (std::make_move_iterator (head), std::make_move_iterator (mid));
-        else
-            std::move (head, mid, buf.begin ());
+        /* copy list "a" to temporary storage */
+        auto & buf = copy (head, mid);
 
         auto a = buf.begin ();
         auto a_end = a + (mid - head);
@@ -101,8 +99,6 @@ void mergesort (Iter start, Iter end, Less less)
     /* A list with 0 or 1 element is sorted by definition. */
     if (end - start < 2)
         return;
-
-    std::vector<Value> buf;
 
     /* The algorithm runs right-to-left (so that insertions are left-to-right). */
     Iter head = end;
@@ -178,7 +174,7 @@ void mergesort (Iter start, Iter end, Less less)
                 if ((mid - head) <= (tail2 - tail))
                     break;
 
-                do_merge (mid, tail, tail2, buf);
+                do_merge (mid, tail, tail2);
 
                 tail = tail2;
                 n_div --;
@@ -197,7 +193,7 @@ void mergesort (Iter start, Iter end, Less less)
             if (head > start && (mid - head) <= (tail - mid) / 2)
                 break;
 
-            do_merge (head, mid, tail, buf);
+            do_merge (head, mid, tail);
 
             mid = tail;
             n_div --;
@@ -208,6 +204,33 @@ void mergesort (Iter start, Iter end, Less less)
         n_div ++;
     }
     while (head > start);
+}
+
+template<typename Iter, typename Less>
+void mergesort (Iter start, Iter end, Less less)
+{
+    typedef typename std::iterator_traits<Iter>::value_type Value;
+
+    /* Temporary storage for the algorithm */
+    std::vector<Value> buf;
+
+    auto copy_to_buf = [& buf] (Iter start, Iter end) -> std::vector<Value> &
+    {
+        /* Move items directly onto the existing vector if it's big enough.
+         * Otherwise, create a new one; this is significantly faster than
+         * appending using std::back_inserter.  Note: end() - begin() is
+         * equivalent to size() but avoids a signed/unsigned comparison
+         * warning. */
+        if (end - start > buf.end () - buf.begin ())
+            buf = std::vector<Value> (std::make_move_iterator (start),
+                                      std::make_move_iterator (end));
+        else
+            std::move (start, end, buf.begin ());
+
+        return buf;
+    };
+
+    mergesort (start, end, less, copy_to_buf);
 }
 
 template<typename Iter>
