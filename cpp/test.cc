@@ -25,7 +25,7 @@
 #include "timsort.h"
 
 #include <assert.h>
-#include <glib.h>
+#include <stdlib.h>
 
 struct Item
 {
@@ -64,8 +64,8 @@ std::vector<Item> gen_array (int n_items, int n_swaps, bool rev)
     /* introduce randomness by swapping pairs of items */
     for (int i = 0; i < n_swaps; i ++)
     {
-        int a = g_random_int_range (0, n_items);
-        int b = g_random_int_range (0, n_items);
+        int a = rand () % n_items;
+        int b = rand () % n_items;
 
         int temp = items[a].val;
         items[a].val = items[b].val;
@@ -107,7 +107,7 @@ void mergesort (std::vector<Item> & items)
 
 int main (void)
 {
-    g_random_set_seed (0);
+    srand (0);
 
     for (int n_items = 1; n_items < 65536; n_items *= 2)
     {
