@@ -60,8 +60,12 @@ private:
     /* Merges two sorted sub-lists */
     static void do_merge (Iter head, Iter mid, Iter tail, Less less, std::vector<Value> & buf)
     {
-        /* copy list "a" to temporary storage */
-        if (buf.size () < (Size) (mid - head))
+        /* Copy list "a" to temporary storage.  Move items directly onto
+         * the existing vector if it's big enough.  Otherwise, create a
+         * new one; this is significantly faster than appending using
+         * std::back_inserter.  Note: end() - begin() is equivalent to
+         * size() but avoids a signed/unsigned comparison warning. */
+        if (mid - head > buf.end () - buf.begin ())
             buf = std::vector<Value> (std::make_move_iterator (head), std::make_move_iterator (mid));
         else
             std::move (head, mid, buf.begin ());
