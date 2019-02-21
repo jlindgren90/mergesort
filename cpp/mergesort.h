@@ -32,6 +32,8 @@
  *
  * As in TimSort, an already-sorted array will be processed in linear time,
  * making this an "adaptive" algorithm.
+ *
+ * This implementation supports only random-access iterators.
  */
 
 template<typename Iter, typename Less>
